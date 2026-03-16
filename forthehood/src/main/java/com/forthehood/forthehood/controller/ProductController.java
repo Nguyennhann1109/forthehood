@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.forthehood.forthehood.dto.ProductDetailDTO;
 import com.forthehood.forthehood.entity.Product;
 import com.forthehood.forthehood.service.ProductService;
 
@@ -53,6 +54,12 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
+    }
+
+    // PRODUCT DETAIL API
+    @GetMapping("/{id}/detail")
+    public ProductDetailDTO getProductDetail(@PathVariable Long id){
+        return productService.getProductDetail(id);
     }
 
 }
