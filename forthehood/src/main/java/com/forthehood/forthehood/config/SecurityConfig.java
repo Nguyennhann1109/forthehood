@@ -12,13 +12,24 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()
-                        .anyRequest().authenticated()
-                );
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+
+                // AUTH API
+                .requestMatchers("/api/auth/**").permitAll()
+
+                // ADMIN API
+                .requestMatchers("/api/admin/**").permitAll()
+
+                // PRODUCT API
+                .requestMatchers("/api/products/**").permitAll()
+
+                // các API khác
+                .anyRequest().permitAll()
+            )
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable());
 
         return http.build();
     }
-
 }

@@ -2,6 +2,7 @@ package com.forthehood.forthehood.service;
 
 import java.util.List;
 
+import com.forthehood.forthehood.dto.ProductDetailDTO;
 import com.forthehood.forthehood.entity.Product;
 
 public interface ProductService {
@@ -15,4 +16,8 @@ public interface ProductService {
     Product updateProduct(Long id, Product product);
 
     void deleteProduct(Long id);
+
+    // NEW METHOD
+    ProductDetailDTO getProductDetail(Long id);
+
 }
