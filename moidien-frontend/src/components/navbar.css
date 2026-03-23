@@ -1,0 +1,30 @@
+.navbar {
+  position: absolute; /* 🔥 quan trọng */
+  top: 0;
+  width: 100%;
+  padding: 30px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.menu {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.right {
+  display: flex;
+  gap: 15px;
+}
