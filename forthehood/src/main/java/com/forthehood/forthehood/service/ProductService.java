@@ -17,7 +17,9 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
-    // NEW METHOD
+    // PRODUCT DETAIL
     ProductDetailDTO getProductDetail(Long id);
 
+    // 🔥 NEW: FILTER BY CATEGORY
+    List<Product> getByCategorySlug(String slug);
 }

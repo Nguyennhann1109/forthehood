@@ -28,7 +28,14 @@ public class CategoryController {
 
     @PostMapping
     public Category createCategory(@RequestBody Category category){
-        return categoryService.createCategory(category);
+
+    String slug = category.getName()
+            .toLowerCase()
+            .replace(" ", "-");
+
+    category.setSlug(slug);
+
+    return categoryService.createCategory(category);
     }
 
 }
