@@ -62,4 +62,10 @@ public class ProductController {
         return productService.getProductDetail(id);
     }
 
+    // 🔥 GET PRODUCTS BY CATEGORY
+    @GetMapping("/category/{slug}")
+    public List<Product> getByCategory(@PathVariable String slug){
+        return productService.getByCategorySlug(slug);
+}
+
 }

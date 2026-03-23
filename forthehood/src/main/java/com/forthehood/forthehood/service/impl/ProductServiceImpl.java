@@ -100,4 +100,9 @@ public class ProductServiceImpl implements ProductService {
         return dto;
     }
 
+    @Override
+    public List<Product> getByCategorySlug(String slug) {
+        return productRepository.findByCategory_Slug(slug);
+    }
+
 }
