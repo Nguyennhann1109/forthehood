@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORTHEHOOD® | Authentic Streetwear</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { 
+            --bg: #f2ece5; 
+            --text: #2d2926; 
+            --accent: #8b572a; 
+            --white: #ffffff;
+            --gray: #e5dfd9;
+            --danger: #a94442;
+            --success: #2e7d32;
+        }
+        .dark {
+    --bg: #121212;
+    --text: #f1f1f1;
+    --white: #1e1e1e;
+    --gray: #333;
+}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
+        h1, h2, h3, .logo, .nav-link { font-family: 'Tenor Sans', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+
+        header { position: fixed; top: 0; width: 100%; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(242, 236, 229, 0.98); z-index: 1000; border-bottom: 1px solid var(--gray); }
+        .logo { font-size: 20px; font-weight: bold; cursor: pointer; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 10px; }
+        
+        /* Mobile Menu Logic */
+        .menu-toggle { display: none; font-size: 20px; cursor: pointer; }
+        .nav-menu { display: flex; gap: 25px; list-style: none; align-items: center; }
+        .nav-link { font-size: 12px; text-decoration: none; color: var(--text); cursor: pointer; transition: 0.3s; }
+        .nav-link:hover { color: var(--accent); }
+
+        .search-box input { border: 1px solid var(--gray); padding: 6px 12px; font-size: 12px; outline: none; width: 150px; }
+
+        section { padding: 120px 5% 60px; display: none; min-height: 100vh; }
+        section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Toolbar filtering & sorting */
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--gray); padding-bottom: 15px; }
+        .toolbar select { width: auto; margin: 0; padding: 5px 10px; font-size: 12px; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .p-card { cursor: pointer; position: relative; background: #fff; padding-bottom: 15px; transition: 0.3s; }
+        .p-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .p-img-box { width: 100%; aspect-ratio: 3/4; background: var(--gray); overflow: hidden; margin-bottom: 15px; }
+        .p-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .p-status-tag { position: absolute; top: 10px; left: 10px; background: var(--text); color: white; padding: 4px 10px; font-size: 10px; text-transform: uppercase; z-index: 2; }
+        .out-of-stock { opacity: 0.6; filter: grayscale(1); }
+
+        .btn-main { background: var(--text); color: #fff; padding: 12px 25px; border: none; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; transition: 0.3s; display: inline-block; text-align: center; }
+        .btn-main:hover { background: var(--accent); }
+        .btn-outline { border: 1px solid var(--text); background: transparent; padding: 8px 15px; cursor: pointer; font-size: 10px; text-transform: uppercase; }
+        
+        input, select, textarea { width: 100%; padding: 12px; background: var(--white); border: 1px solid var(--gray); margin-bottom: 15px; outline: none; font-family: inherit; font-size: 13px; }
+
+        .admin-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .admin-container { background: var(--white); padding: 25px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow-x: auto; }
+        .stat-card { text-align: center; }
+        .stat-card h4 { font-size: 11px; color: #888; margin-bottom: 10px; }
+        .stat-card p { font-size: 22px; font-weight: bold; font-family: 'Tenor Sans'; }
+
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { text-align: left; padding: 15px; border-bottom: 2px solid var(--bg); font-size: 11px; background: #fafafa; color: #888; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid var(--bg); font-size: 13px; }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--bg); width: 100%; max-width: 900px; height: 85vh; display: grid; grid-template-columns: 1.2fr 1fr; overflow: hidden; position: relative; }
+        .modal-gallery { height: 100%; overflow-y: auto; background: #fff; }
+        .modal-gallery img { width: 100%; display: block; }
+        .modal-info { padding: 40px; overflow-y: auto; }
+
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-done { background: #d4edda; color: #155724; }
+        .status-cancel { background: #f8d7da; color: #721c24; }
+        .stock-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.stock-ok {
+    background: #d4edda;
+    color: #155724;
+}
+
+.stock-out {
+    background: #f8d7da;
+    color: #721c24;
+}
+        .promo-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        .promo-box input { margin-bottom: 0; flex: 1; }
+
+        @media (max-width: 768px) {
+            header { padding: 10px 5%; }
+            .nav-menu { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--white); flex-direction: column; padding: 20px; border-bottom: 1px solid var(--gray); }
+            .nav-menu.mobile-active { display: flex; }
+            .menu-toggle { display: block; }
+            .modal-content { grid-template-columns: 1fr; height: 95vh; }
+            .modal-gallery { height: 300px; }
+            .search-box input { width: 100px; }
+        }
+        .hero {
+    height: 60vh;
+    background: url('https://images.unsplash.com/photo-1523398002811-999ca8dec234') center/cover;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+}
+
+.hero-content {
+    position: relative;
+    color: #fff;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 40px;
+    letter-spacing: 3px;
+}
+
+.hero p {
+    margin: 10px 0 20px;
+    font-size: 14px;
+}
+.p-img-box img:hover {
+    transform: scale(1.1);
+}
+.status-confirmed-user {
+    background: #d0ebff;
+    color: #0b7285;
+}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="fa fa-bars menu-toggle" onclick="app.toggleMenu()"></i>
+            <a class="logo" onclick="app.navigate('home')">
+                <i class="fa-solid fa-vest-patches"></i> FORTHEHOOD®
+            </a>
+        </div>
+        
+        <nav style="display: flex; align-items: center;">
+            <ul class="nav-menu" id="mainNav">
+                <li><a class="nav-link" onclick="app.navigate('about')">About</a></li>
+                <li><a class="nav-link" onclick="app.navigate('home')">Trang Chủ</a></li>
+                <li><a class="nav-link" onclick="app.filter('cate', 'Top')">Áo</a></li>
+                <li><a class="nav-link" onclick="app.filter('cate', 'Bottom')">Quần</a></li>
+                <li id="myOrdersNavLink"><a class="nav-link" onclick="app.navigate('orders')">Đơn hàng</a></li>
+                <li id="adminNavLink" style="display:none"><a class="nav-link" onclick="app.navigate('admin')" style="color:var(--accent); font-weight:bold">QUẢN TRỊ</a></li>
+            </ul>
+            <div class="search-box" style="margin-left: 20px;">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm..." onkeyup="app.handleSearch(event)">
+            </div>
+        </nav>
+
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <button onclick="app.toggleDark()">🌙</button>
+            <a onclick="app.handleUserAction()" id="userBtn" style="cursor:pointer; font-size: 11px; font-weight: 600;">LOGIN</a>
+            <a onclick="app.navigate('cart')" style="position:relative; cursor:pointer">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span id="cartCount" style="position:absolute; top:-8px; right:-10px; background:var(--accent); color:#fff; font-size:9px; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center">0</span>
+            </a>
+        </div>
+    </header>
+
+    <section id="home" class="active">
+        <div class="hero">
+    <div class="hero-content">
+        <h1>FORTHEHOOD®</h1>
+        <p>Streetwear for the real ones</p>
+        <button class="btn-main" onclick="app.navigate('home')">SHOP NOW</button>
+    </div>
+</div>
+        <div class="toolbar">
+            <h3 id="viewTitle">New Arrivals</h3>
+            <select id="sortSelect" onchange="app.handleSort()">
+                <option value="newest">Mới nhất</option>
+                <option value="price-asc">Giá: Thấp tới Cao</option>
+                <option value="price-desc">Giá: Cao tới Thấp</option>
+            </select>
+        </div>
+        <div class="product-grid" id="productDisplay"></div>
+    </section>
+    <section id="about">
+    <div style="max-width:800px; margin:0 auto; text-align:center">
+        <h2>ABOUT FORTHEHOOD</h2><br>
+        <p style="font-size:14px; color:#555; line-height:1.8">
+            Forthehood không chỉ là một local brand, mà là tinh thần của đường phố được thể hiện qua từng thiết kế. 
+            Lấy cảm hứng từ urban culture, Forthehood mang đến những sản phẩm streetwear đơn giản nhưng cá tính, 
+            thoải mái nhưng vẫn đủ nổi bật để thể hiện chất riêng.
+        </p>
+    </div>
+</section>
+
+    <section id="cart">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2>Giỏ hàng</h2><br>
+            <div id="cartItems"></div>
+            
+            <div id="checkoutArea" style="display:none; margin-top: 30px;">
+                <div class="promo-box">
+                    <input type="text" id="promoCode" placeholder="Mã giảm giá (Thử: HOOD10)">
+                    <button class="btn-outline" onclick="app.applyPromo()">Áp dụng</button>
+                </div>
+                <div id="cartTotal" style="text-align: right; padding: 20px 0; font-weight: bold; font-size: 18px; border-top: 1px solid var(--gray);"></div>
+                <button class="btn-main" style="width:100%" onclick="app.navigate('checkout')">Tiến hành thanh toán</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="checkout">
+        <div style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border: 1px solid var(--gray);">
+            <h2 style="text-align:center">Thông tin giao hàng</h2><br>
+            <input type="text" id="shipName" placeholder="Họ và tên người nhận">
+            <input type="text" id="shipPhone" placeholder="Số điện thoại">
+            <textarea id="shipAddr" placeholder="Địa chỉ giao hàng chi tiết" rows="3"></textarea>
+            
+            <label style="font-size:11px; font-weight:bold">PHƯƠNG THỨC THANH TOÁN</label>
+            <select id="payMethod" onchange="app.toggleQR()">
+                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                <option value="qr">Chuyển khoản qua mã QR</option>
+            </select>
+
+            <div id="qrArea" style="display:none" class="qr-box">
+                <p style="font-size:12px">Quét mã để thanh toán đơn hàng</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=FORTHEHOOD_PAYMENT" width="180">
+                <p style="font-weight:bold; color:var(--accent); margin-top:10px" id="qrTotal"></p>
+            </div>
+
+            <button class="btn-main" style="width:100%; margin-top:20px" onclick="app.processCheckout()">Xác nhận đặt hàng</button>
+            <button class="btn-outline" style="width:100%; margin-top:10px; border:none" onclick="app.navigate('cart')">Quay lại giỏ hàng</button>
+        </div>
+    </section>
+
+    <section id="orders">
+        <div style="max-width: 900px; margin: 0 auto;">
+            <h2>Lịch sử mua hàng</h2><br>
+            <div id="myOrdersList"></div>
+        </div>
+    </section>
+
+    <section id="admin">
+        <div class="admin-dashboard">
+            <div class="admin-container stat-card">
+                <h4>ĐƠN HÀNG</h4>
+                <p id="statOrders">0</p>
+            </div>
+            <div class="admin-container stat-card">
+                <h4>DOANH THU</h4>
+                <p id="statRevenue" style="color:var(--success)">0đ</p>
+            </div>
+            <div class="admin-container stat-card">
+                <h4>SẢN PHẨM</h4>
+                <p id="statProds">0</p>
+            </div>
+        </div>
+
+        <div class="admin-container">
+            <h3>Danh sách đơn hàng</h3>
+            <div style="margin-bottom:15px; display:flex; gap:10px">
+    <input 
+        placeholder="🔍 Tìm mã đơn..." 
+        onkeyup="app.searchOrder(this.value)" 
+        style="padding:10px; width:250px">
+
+    <select onchange="app.filterOrder(this.value)">
+        <option value="">Tất cả</option>
+        <option>Chờ xác nhận</option>
+        <option>Đã xác nhận</option>
+        <option>Đã hủy</option>
+    </select>
+</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã ĐH</th>
+                        <th>Khách hàng</th>
+                        <th>Sản phẩm</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="orderListBody"></tbody>
+            </table>
+        </div>
+
+        <div class="admin-container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <h3>Quản lý kho hàng</h3>
+                <button onclick="app.openProductModal()" class="btn-main"><i class="fa fa-plus"></i> Thêm mới</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Kho</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody id="adminProductTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="modal" id="pModal">
+        <div class="modal-content">
+            <span onclick="app.closeModal()" style="position:absolute; top:20px; right:20px; cursor:pointer; font-size:24px; z-index:10">&times;</span>
+            <div class="modal-gallery" id="modalImgs"></div>
+            <div class="modal-info">
+                <h2 id="mTitle"></h2>
+                <p id="mPrice" style="font-size:20px; color:var(--accent); margin: 15px 0"></p>
+                <div id="mDesc" style="font-size:13px; color:#555; margin-bottom:25px"></div>
+                <div id="purchaseControls">
+                    <label style="font-size:11px; font-weight:bold">KÍCH THƯỚC</label>
+                    <select id="mSize"><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+                    <button class="btn-main" style="width:100%; margin-top:10px" onclick="app.addToCart()">Thêm vào giỏ hàng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="formModal">
+        <div class="modal-content" style="max-width: 450px; grid-template-columns: 1fr; height: auto; padding: 30px;">
+            <h3 id="formTitle">Thông tin sản phẩm</h3><br>
+            <input type="text" id="fName" placeholder="Tên sản phẩm">
+            <input type="number" id="fPrice" placeholder="Giá bán">
+            <select id="fCate"><option value="Top">Áo</option><option value="Bottom">Quần</option></select>
+            <input type="number" id="fStock" placeholder="Số lượng tồn kho">
+            <input type="file" id="fFile" onchange="app.handleFile(this)">
+            <div id="fPreview" style="margin-bottom:15px"></div>
+            <div style="display:flex; gap:10px">
+                <button class="btn-main" style="flex:1" onclick="app.saveProduct()">Lưu dữ liệu</button>
+                <button class="btn-outline" onclick="app.closeModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            products: JSON.parse(localStorage.getItem('fth_v4_prods')) || [
+                {id: 1, name: "Camo Jacket", price: 1250000, cate: "Top", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea", stock: 10},
+                {id: 2, name: "Boxy Tee", price: 450000, cate: "Top", img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab", stock: 10}
+            ],
+            orders: JSON.parse(localStorage.getItem('fth_orders')) || [],
+            cart: JSON.parse(localStorage.getItem('fth_cart')) || [],
+            currentUser: JSON.parse(localStorage.getItem('fth_v4_user')) || null,
+            discount: 0,
+            editingId: null,
+            changeQty(id, delta) {
+    const item = this.cart.find(i => i.cartId === id);
+    if(!item) return;
+
+    item.qty += delta;
+
+    if(item.qty <= 0) {
+        this.removeCart(id);
+    } else {
+        this.renderCart();
+        this.updateHeader();
+    }
+},
+
+searchOrder(keyword) {
+    keyword = keyword.toLowerCase();
+
+    const filtered = this.orders.filter(o => 
+        o.id.toLowerCase().includes(keyword)
+    );
+
+    this.renderFilteredOrders(filtered);
+},
+
+filterOrder(status) {
+    if(!status) {
+        this.renderFilteredOrders(this.orders);
+        return;
+    }
+
+    const filtered = this.orders.filter(o => o.status === status);
+    this.renderFilteredOrders(filtered);
+},
+renderFilteredOrders(orderList) {
+    document.getElementById('orderListBody').innerHTML = orderList.slice().reverse().map(o => `
+        <tr>
+            <td>${o.id}</td>
+
+            <td>
+                ${o.customerName}<br>
+                <small>${o.phone}</small>
+            </td>
+
+            <td>
+                ${o.items.map(i => `
+                    <div>• ${i.name} (Size ${i.size}) x${i.qty}</div>
+                `).join('')}
+            </td>
+
+            <td>${o.total.toLocaleString()}đ</td>
+
+            <td>
+                <span class="status-badge ${
+                    o.status === 'Đã xác nhận' 
+                        ? 'status-done' 
+                        : (o.status === 'Đã hủy' 
+                            ? 'status-cancel' 
+                            : 'status-pending')
+                }">
+                    ${o.status}
+                </span>
+            </td>
+
+            <td>
+                ${o.status === 'Chờ xác nhận' ? `
+                    <button onclick="app.updateOrderStatus('${o.id}', 'Đã xác nhận')" style="color:green">✔</button>
+                    <button onclick="app.updateOrderStatus('${o.id}', 'Đã hủy')" style="color:red">✖</button>
+                ` : '--'}
+                
+                <button onclick="app.viewOrderDetail('${o.id}')">Xem</button>
+            </td>
+        </tr>
+    `).join('');
+},
+toggleDark() {
+    document.body.classList.toggle('dark');
+
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('fth_dark', isDark);
+},
+
+            init() {
+                this.renderProducts(this.products);
+                this.updateHeader();
+                setInterval(() => {
+    this.orders = JSON.parse(localStorage.getItem('fth_orders')) || [];
+    
+    if(document.getElementById('orders').classList.contains('active')) {
+        this.renderMyOrders();
+    }
+}, 3000);
+                if(localStorage.getItem('fth_dark') === 'true') {
+    document.body.classList.add('dark');
+}
+                if(this.currentUser?.role === 'admin') {
+                    document.getElementById('adminNavLink').style.display = 'block';
+                    document.getElementById('myOrdersNavLink').style.display = 'none';
+                    if(this.currentUser?.role === 'admin') {
+                this.renderAdminPage();    
+                 this.navigate('admin');        
+}
+                }
+            },
+
+            updateHeader() {
+                document.getElementById('cartCount').innerText = this.cart.length;
+                document.getElementById('userBtn').innerText = this.currentUser ? this.currentUser.name.toUpperCase() : "LOGIN";
+                localStorage.setItem('fth_cart', JSON.stringify(this.cart));
+            },
+
+            toggleMenu() {
+                document.getElementById('mainNav').classList.toggle('mobile-active');
+            },
+
+            handleSearch(e) {
+                const key = e.target.value.toLowerCase();
+                const filtered = this.products.filter(p => p.name.toLowerCase().includes(key));
+                this.renderProducts(filtered);
+                document.getElementById('viewTitle').innerText = key ? `Kết quả: "${key}"` : "New Arrivals";
+            },
+
+            handleSort() {
+                const val = document.getElementById('sortSelect').value;
+                let sorted = [...this.products];
+                if(val === 'price-asc') sorted.sort((a,b) => a.price - b.price);
+                if(val === 'price-desc') sorted.sort((a,b) => b.price - a.price);
+                if(val === 'newest') sorted.reverse();
+                this.renderProducts(sorted);
+            },
+
+            navigate(id) {
+                if(id === 'checkout' && this.cart.length === 0) return Swal.fire('Lỗi', 'Giỏ hàng đang trống', 'error');
+                if((id === 'checkout' || id === 'orders') && !this.currentUser) return this.handleUserAction();
+                
+                document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+                document.getElementById('mainNav').classList.remove('mobile-active');
+                
+                if(id === 'admin') {
+    this.renderAdminPage();
+}
+                if(id === 'cart') this.renderCart();
+                if(id === 'orders') this.renderMyOrders();
+                if(id === 'checkout') this.updateCheckoutTotal();
+                window.scrollTo(0,0);
+            },
+
+            filter(type, val) {
+                this.renderProducts(this.products.filter(p => p[type] === val));
+                document.getElementById('viewTitle').innerText = val;
+                this.navigate('home');
+            },
+
+            renderProducts(data) {
+                const container = document.getElementById('productDisplay');
+                container.innerHTML = data.map(p => `
+                    <div class="p-card ${p.stock == 0 ? 'out-of-stock' : ''}" onclick="app.showDetail(${p.id})">
+                        ${p.stock == 0 ? '<div class="p-status-tag">Sold Out</div>' : ''}
+                        <div class="p-img-box"><img src="${p.img}"></div>
+                        <div style="text-align:center">
+                            <p style="font-size:12px; font-weight:500">${p.name}</p>
+                            <p style="color:var(--accent); font-weight:600; font-size:14px">${p.price.toLocaleString()}đ</p>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            showDetail(id) {
+                const p = this.products.find(x => x.id === id);
+                document.getElementById('mTitle').innerText = p.name;
+                document.getElementById('mPrice').innerText = p.price.toLocaleString() + " VND";
+                document.getElementById('modalImgs').innerHTML = `<img src="${p.img}">`;
+                document.getElementById('mDesc').innerHTML = `Sản phẩm thuộc bộ sưu tập Authentic Streetwear. Chất liệu 100% Cotton định lượng cao, thoáng mát và giữ form cực tốt.`;
+                document.getElementById('purchaseControls').style.display =
+    (p.stock > 0 && this.currentUser?.role !== 'admin')
+        ? 'block'
+        : 'none';
+                document.getElementById('pModal').style.display = 'flex';
+                this.activeId = id;
+            },
+
+            addToCart() {
+    // 🔥 phải lấy sản phẩm trước
+    const p = this.products.find(x => x.id === this.activeId);
+
+    // 🔥 check tồn kho
+    if (p.stock <= 0) {
+        return Swal.fire('Hết hàng', 'Sản phẩm đã hết', 'error');
+    }
+
+    const size = document.getElementById('mSize').value;
+
+    const existing = this.cart.find(i => i.id === p.id && i.size === size);
+
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        this.cart.push({
+            ...p,
+            size,
+            qty: 1,
+            cartId: Date.now()
+        });
+    }
+
+    this.updateHeader();
+    this.closeModal();
+},
+
+            applyPromo() {
+                const code = document.getElementById('promoCode').value.toUpperCase();
+                if(code === 'HOOD10') {
+                    this.discount = 0.1; // 10%
+                    Swal.fire('Thành công', 'Đã áp dụng mã giảm giá 10%', 'success');
+                } else {
+                    this.discount = 0;
+                    Swal.fire('Lỗi', 'Mã giảm giá không hợp lệ', 'error');
+                }
+                this.renderCart();
+            },
+
+            renderCart() {
+                const container = document.getElementById('cartItems');
+                if(this.cart.length === 0) {
+                    container.innerHTML = "<p style='text-align:center; padding:50px; color:#999'>Giỏ hàng trống</p>";
+                    document.getElementById('checkoutArea').style.display = 'none';
+                    return;
+                }
+                document.getElementById('checkoutArea').style.display = 'block';
+                let subtotal = this.cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+                let finalTotal = subtotal * (1 - this.discount);
+
+                container.innerHTML = this.cart.map(item => `
+<div style="display:flex; align-items:center; gap:20px; padding:15px 0; border-bottom:1px solid #eee">
+    
+    <img src="${item.img}" width="60">
+
+    <div style="flex:1">
+        <p>${item.name}</p>
+        <p>Size: ${item.size}</p>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:10px">
+        <button onclick="app.changeQty(${item.cartId}, -1)">-</button>
+        <span>${item.qty}</span>
+        <button onclick="app.changeQty(${item.cartId}, 1)">+</button>
+    </div>
+
+    <p>${(item.price * item.qty).toLocaleString()}đ</p>
+
+    <i class="fa fa-trash" onclick="app.removeCart(${item.cartId})"></i>
+
+</div>
+`).join('');
+
+                document.getElementById('cartTotal').innerHTML = `
+                    <p style="font-size:13px; color:#888; font-weight:normal">Tạm tính: ${subtotal.toLocaleString()}đ</p>
+                    ${this.discount > 0 ? `<p style="font-size:13px; color:var(--success); font-weight:normal">Giảm giá: 10%</p>` : ''}
+                    <p style="margin-top:5px">TỔNG: ${finalTotal.toLocaleString()} VND</p>
+                `;
+            },
+
+            removeCart(cid) {
+                this.cart = this.cart.filter(i => i.cartId !== cid);
+                this.renderCart(); this.updateHeader();
+            },
+
+            updateCheckoutTotal() {
+                let subtotal = this.cart.reduce((sum, item) => sum + item.price, 0);
+                let total = subtotal * (1 - this.discount);
+                document.getElementById('qrTotal').innerText = "Số tiền thanh toán: " + total.toLocaleString() + " VND";
+            },
+
+            toggleQR() {
+                document.getElementById('qrArea').style.display = document.getElementById('payMethod').value === 'qr' ? 'block' : 'none';
+            },
+
+            processCheckout() {
+                const name = document.getElementById('shipName').value;
+                const phone = document.getElementById('shipPhone').value;
+                const addr = document.getElementById('shipAddr').value;
+                if(!name || !phone || !addr) return Swal.fire('Lỗi', 'Vui lòng nhập đủ thông tin', 'error');
+
+                const subtotal = this.cart.reduce((s, i) => s + i.price, 0);
+                const newOrder = {
+                    id: 'FTH' + Math.floor(Math.random() * 100000),
+                    customerEmail: this.currentUser.email,
+                    customerName: name, phone, address: addr,
+                    items: [...this.cart],
+                    total: subtotal * (1 - this.discount),
+                    method: document.getElementById('payMethod').value,
+                    status: 'Chờ xác nhận',
+                    date: new Date().toLocaleString()
+                };
+
+                this.orders.push(newOrder);
+                localStorage.setItem('fth_orders', JSON.stringify(this.orders));
+                
+                Swal.fire('Đặt hàng thành công', 'Chúng tôi sẽ sớm liên hệ xác nhận!', 'success');
+                this.cart = []; this.discount = 0;
+                this.updateHeader();
+                this.navigate('orders');
+            },
+
+            renderAdminPage() {
+                this.orders = (JSON.parse(localStorage.getItem('fth_orders')) || []).map(o => ({
+    ...o,
+    items: o.items || []
+}));
+                this.products = JSON.parse(localStorage.getItem('fth_v4_prods')) || [];
+                this.orders = JSON.parse(localStorage.getItem('fth_orders')) || [];
+                const revenue = this.orders
+    .filter(o => o.status === 'Đã xác nhận')
+    .reduce((s, o) => s + o.total, 0);
+                document.getElementById('statOrders').innerText = this.orders.length;
+                document.getElementById('statRevenue').innerText = revenue.toLocaleString() + "đ";
+                document.getElementById('statProds').innerText = this.products.length;
+
+                document.getElementById('orderListBody').innerHTML = this.orders.slice().reverse().map(o => `
+                    <tr>
+                        <td onclick="app.viewOrderDetail('${o.id}')" style="cursor:pointer; font-weight:bold; color:var(--accent)">${o.id}</td>
+                        <td>
+    ${o.customerName}<br>
+    <small>${o.phone}</small><br>
+    <small>${o.address}</small>
+</td>
+                        <td>
+    ${(o.items || []).map(i => `
+    <div>
+        • ${i.name} (Size ${i.size}) x${i.qty}
+    </div>
+`).join('')}
+</td>
+                        <td>${o.total.toLocaleString()}đ</td>
+                        <td><span class="status-badge ${
+    o.status === 'Đã xác nhận' 
+        ? 'status-done' 
+        : (o.status === 'Đã hủy' 
+            ? 'status-cancel' 
+            : 'status-pending')
+}">${o.status}</span></td>
+                        <td>
+                            ${o.status === 'Chờ xác nhận' ? `
+                                <button class="btn-outline" style="color:green; border-color:green; padding:4px 8px" onclick="app.updateOrderStatus('${o.id}', 'Đã xác nhận')">Duyệt</button>
+                                <button class="btn-outline" style="color:red; border-color:red; padding:4px 8px" onclick="app.updateOrderStatus('${o.id}', 'Đã hủy')">Hủy</button>
+                            ` : '--'}
+                        </td>
+                    </tr>
+                `).join('');
+
+                document.getElementById('adminProductTable').innerHTML = this.products.map(p => `
+                    <tr>
+    <td><img src="${p.img}" width="50" style="border-radius:6px"></td>
+
+    <td>
+        <b>${p.name}</b><br>
+        <small>ID: ${p.id}</small>
+    </td>
+
+    <td style="color:var(--accent); font-weight:bold">
+        ${p.price.toLocaleString()}đ
+    </td>
+
+    <td>
+    ${(p.stock ?? 0) > 0 
+    ? `<span style="color:green; font-weight:bold">Còn (${p.stock})</span>` 
+    : `<span style="color:red; font-weight:bold">Hết hàng</span>`
+}
+</td>
+
+    <td style="display:flex; gap:8px; flex-wrap:wrap">
+
+        <!-- Sửa -->
+        <button onclick="app.editProduct(${p.id})" 
+            style="background:#1976d2; color:white; border:none; padding:5px 10px; border-radius:4px">
+            ✏️
+        </button>
+
+        <!-- Xóa -->
+        <button onclick="app.deleteProduct(${p.id})" 
+            style="background:#d32f2f; color:white; border:none; padding:5px 10px; border-radius:4px">
+            🗑
+        </button>
+
+        <!-- Toggle kho -->
+        <button onclick="app.toggleStock(${p.id})"
+            style="background:#555; color:white; border:none; padding:5px 10px; border-radius:4px">
+            🔄
+        </button>
+
+    </td>
+</tr>
+                `).join('');
+            },
+
+            // CHỨC NĂNG EDIT MỚI
+            editProduct(id) {
+                const p = this.products.find(x => x.id === id);
+                this.editingId = id;
+                document.getElementById('fName').value = p.name;
+                document.getElementById('fPrice').value = p.price;
+                document.getElementById('fCate').value = p.cate;
+                document.getElementById('fStock').value = p.stock;
+                this.tempImg = p.img;
+                document.getElementById('fPreview').innerHTML = `<img src="${p.img}" width="80">`;
+                document.getElementById('formTitle').innerText = "Sửa sản phẩm";
+                document.getElementById('formModal').style.display = 'flex';
+            },
+
+            openProductModal() {
+                this.editingId = null;
+                document.getElementById('fName').value = "";
+                document.getElementById('fPrice').value = "";
+                document.getElementById('fPreview').innerHTML = "";
+                document.getElementById('formTitle').innerText = "Thêm sản phẩm mới";
+                document.getElementById('formModal').style.display = 'flex';
+            },
+
+            saveProduct() {
+    const name = document.getElementById('fName').value;
+    const price = parseInt(document.getElementById('fPrice').value);
+    const stock = parseInt(document.getElementById('fStock').value);
+
+    if(!name || !price || stock < 0 || !this.tempImg) {
+        return Swal.fire('Thiếu thông tin', 'Nhập đầy đủ', 'warning');
+    }
+
+    if(this.editingId) {
+        const idx = this.products.findIndex(p => p.id === this.editingId);
+        this.products[idx] = {
+            ...this.products[idx],
+            name,
+            price,
+            cate: document.getElementById('fCate').value,
+            stock,
+            img: this.tempImg
+        };
+    } else {
+        this.products.push({
+            id: Date.now(),
+            name,
+            price,
+            cate: document.getElementById('fCate').value,
+            stock,
+            img: this.tempImg
+        });
+    }
+
+    localStorage.setItem('fth_v4_prods', JSON.stringify(this.products));
+    this.closeModal();
+    this.renderAdminPage();
+},
+
+            updateOrderStatus(id, newStatus) {
+    const idx = this.orders.findIndex(o => o.id === id);
+
+    if(idx !== -1) {
+        const order = this.orders[idx];
+
+        // 🔥 Nếu duyệt đơn → trừ kho
+        if(newStatus === 'Đã xác nhận') {
+            order.items.forEach(item => {
+                const prod = this.products.find(p => p.id === item.id);
+                if(prod) {
+                    prod.stock -= item.qty;
+                    if(prod.stock < 0) prod.stock = 0;
+                }
+            });
+        }
+
+        order.status = newStatus;
+
+        // 🔥 Lưu lại
+        localStorage.setItem('fth_orders', JSON.stringify(this.orders));
+        localStorage.setItem('fth_v4_prods', JSON.stringify(this.products));
+
+        // 🔥 Reload UI
+        this.renderFilteredOrders(this.orders);
+        this.renderProducts(this.products);
+
+        Swal.fire('Đã cập nhật trạng thái', '', 'success');
+    }
+},
+
+            handleFile(input) {
+                const reader = new FileReader();
+                reader.onload = (e) => { 
+                    this.tempImg = e.target.result; 
+                    document.getElementById('fPreview').innerHTML = `<img src="${this.tempImg}" width="80">`; 
+                };
+                if(input.files[0]) reader.readAsDataURL(input.files[0]);
+            },
+
+            handleUserAction() {
+                if(this.currentUser) {
+                    if(confirm("Bạn muốn đăng xuất?")) { 
+                        localStorage.removeItem('fth_v4_user'); 
+                        location.reload(); 
+                    }
+                } else {
+                    Swal.fire({ 
+                        title: 'Đăng nhập', 
+                        input: 'email', 
+                        inputPlaceholder: 'Email (admin@fth.com để quản trị)',
+                        confirmButtonText: 'VÀO CỬA HÀNG',
+                        confirmButtonColor: '#2d2926'
+                    }).then(res => {
+                        if(res.value) {
+                            const isAdmin = res.value === 'admin@fth.com';
+                            this.currentUser = { name: isAdmin ? 'Admin' : 'Khách hàng', email: res.value, role: isAdmin ? 'admin' : 'user' };
+                            localStorage.setItem('fth_v4_user', JSON.stringify(this.currentUser));
+                            location.reload();
+                        }
+                    });
+                }
+            },
+
+            renderMyOrders() {
+                const myOrders = this.orders.filter(o => o.customerEmail === this.currentUser.email);
+                const container = document.getElementById('myOrdersList');
+                if(myOrders.length === 0) { container.innerHTML = "<p style='text-align:center; padding:50px'>Chưa có đơn hàng nào.</p>"; return; }
+                
+                container.innerHTML = myOrders.slice().reverse().map(o => `
+                    <div class="admin-container">
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <b onclick="app.viewOrderDetail('${o.id}')" style="cursor:pointer; text-decoration:underline">Mã: ${o.id}</b>
+                            <span class="status-badge ${o.status === 'Đã xác nhận' ? 'status-done' : (o.status === 'Đã hủy' ? 'status-cancel' : 'status-pending')}">${o.status}</span>
+                        </div>
+                        <p style="font-size:11px; color:#999; margin-top:5px">${o.date}</p>
+                        <hr style="margin:15px 0; opacity:0.1">
+                        <div style="font-size:13px">${o.items.length} sản phẩm - <b>Tổng: ${o.total.toLocaleString()}đ</b></div>
+                        <div style="text-align:right; margin-top:10px">
+                            <button class="btn-outline" onclick="app.viewOrderDetail('${o.id}')">Chi tiết</button>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            viewOrderDetail(id) {
+                const o = this.orders.find(x => x.id === id);
+                let itemHtml = o.items.map(i => `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px">
+                        <span>${i.name} (Size ${i.size})</span>
+                        <b>${i.price.toLocaleString()}đ</b>
+                    </div>
+                `).join('');
+
+                Swal.fire({
+                    title: 'CHI TIẾT ĐƠN HÀNG',
+                    html: `<div style="text-align:left; border-top:1px solid #eee; padding-top:15px">
+                        <p style="margin-bottom:10px"><b>Khách hàng:</b> ${o.customerName}</p>
+                        <p style="margin-bottom:10px"><b>Địa chỉ:</b> ${o.address}</p>
+                        <p style="margin-bottom:15px"><b>Thanh toán:</b> ${o.method.toUpperCase()}</p>
+                        <div style="background:#f9f9f9; padding:15px">${itemHtml}</div>
+                        <p style="text-align:right; margin-top:15px; font-size:18px"><b>TỔNG: ${o.total.toLocaleString()}đ</b></p>
+                    </div>`,
+                    confirmButtonText: 'Đóng',
+                    confirmButtonColor: '#2d2926'
+                });
+            },
+
+            deleteProduct(id) {
+                if(confirm('Xóa sản phẩm này?')) {
+                    this.products = this.products.filter(p => p.id !== id);
+                    localStorage.setItem('fth_v4_prods', JSON.stringify(this.products));
+                    this.renderAdminPage();
+                    this.renderProducts(this.products);
+                }
+            },
+            toggleStock(id) {
+    // 1. Tìm sản phẩm theo id
+    const p = this.products.find(x => x.id === id);
+
+    // 2. Nếu không tìm thấy thì dừng
+    if (!p) return;
+
+    // 3. Kiểm tra tồn kho hiện tại
+    if (p.stock > 0) {
+        // 👉 Nếu đang còn hàng → chuyển thành hết hàng
+        p.stock = 0;
+    } else {
+        // 👉 Nếu đang hết hàng → cho lại số lượng mặc định
+        p.stock = 10; // bạn có thể đổi thành 1 hoặc số khác
+    }
+
+    // 4. Lưu lại vào localStorage
+    localStorage.setItem('fth_v4_prods', JSON.stringify(this.products));
+
+    // 5. Render lại UI (QUAN TRỌNG)
+    this.renderAdminPage();     // reload bảng admin
+    this.renderProducts(this.products); // reload shop ngoài
+
+    // 6. Thông báo đẹp
+    Swal.fire({
+        icon: 'success',
+        title: 'Đã cập nhật trạng thái kho',
+        timer: 1200,
+        showConfirmButton: false
+    });
+},
+
+            closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+        };
+
+        app.init();
+    </script>
+<footer style="background:#111; color:#fff; padding:60px 5%">
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:40px">
+
+        <div>
+            <h2>FORTHEHOOD®</h2>
+            <p style="color:#aaa; font-size:13px; max-width:300px">
+                Streetwear dành cho những người sống thật với chính mình.
+            </p>
+        </div>
+
+        <div>
+            <h4>Follow us</h4>
+            <div style="display:flex; gap:15px; margin-top:10px">
+                <i class="fab fa-facebook"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-tiktok"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <p style="text-align:center; margin-top:30px; color:#777">
+        © 2026 FORTHEHOOD®
+    </p>
+</footer>
+</body>
+</html>
